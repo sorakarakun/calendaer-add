@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>シフト登録</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 400px; margin: auto; }
+    label { display: block; margin-top: 15px; font-weight: bold; }
+    input, select, button { width: 100%; padding: 12px; margin-top: 5px; box-sizing: border-box; font-size: 16px; border-radius: 8px; border: 1px solid #ccc; }
+    button { background: #0070f3; color: white; border: none; font-weight: bold; margin-top: 25px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h2>シフト登録</h2>
+  <label>日付</label>
+  <input type="date" id="shiftDate" required>
+
+  <label>シフト種別</label>
+  <select id="shiftType">
+    <option value="日勤">日勤 (09:00 - 18:00)</option>
+    <option value="夜勤">夜勤 (17:00 - 翌09:00)</option>
+    <option value="明け休み">明け休み</option>
+    <option value="公休">公休</option>
+  </select>
+
+  <label>備考</label>
+  <input type="text" id="shiftNote" placeholder="メモがあれば入力">
+
+  <button id="submitBtn">カレンダーに登録</button>
+
+  <script>
+    document.getElementById('submitBtn').addEventListener('click', async () => {
+      const payload = {
+        date: document.getElementById('shiftDate').value,
+        shiftType: document.getElementById('shiftType').value,
+        note: document.getElementById('shiftNote').value,
+      };
+
+      if (!payload.date) return alert('日付を選択してください');
+
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.textContent = '登録中...';
+
+      const res = await fetch('/api/shift', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        alert('カレンダーに登録しました！');
+      } else {
+        alert('登録に失敗しました。');
+      }
+      btn.disabled = false;
+      btn.textContent = 'カレンダーに登録';
+    });
+  </script>
+</body>
+</html>
